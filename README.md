@@ -31,19 +31,25 @@ Fluxo:
 
 ## Fonte de Dados
 
-- Origem: INEP (Censo Escolar)
+- Origem: INEP - Instituto Nacional de Estudos e Pesquisas Educacionais (Censo Escolar)
 - Formato: CSV (compactado em .zip)
-- Frequência: anual
+- Enconding: latin1
+- Frequência: Anual
+- Tabelas:
+    - Tabela Escola
+    - Tabela Turma
 
-data_url = f"https://download.inep.gov.br/dados_abertos/microdados_censo_escolar_{year_ref}_.zip"
+https://download.inep.gov.br/dados_abertos/microdados_censo_escolar_{ano}_.zip
 
 ---
 
 ## Tecnologias
 
-* PySpark
 * Databricks
-* Python (requests)
+* PySpark
+* Delta Lake
+* Unity Catalog
+* Python (requests, zipfile)
 
 ---
 
@@ -68,6 +74,8 @@ data_url = f"https://download.inep.gov.br/dados_abertos/microdados_censo_escolar
 
 ## Indicadores
 
+MÉTRICAS:
+
 * % escolas com água
 * % escolas com energia elétrica
 * % escolas com internet
@@ -76,6 +84,30 @@ data_url = f"https://download.inep.gov.br/dados_abertos/microdados_censo_escolar
 * % escolas com biblioteca
 * % escolas com quadra esportiva
 * % escolas com refeitório
+
+PESOS:
+
+Saneamento > Infraestrutura > Lazer
+
+* PERC_POSSUI_AGUA: 2
+* PERC_POSSUI_ESGOTO: 2
+* PERC_POSSUI_ENERGIA: 2
+* PERC_POSSUI_BANHEIRO: 2
+* PERC_POSSUI_INTERNET: 1.5
+* PERC_POSSUI_BANDA_LARGA: 1.5
+* PERC_POSSUI_LAB_INFORMATICA: 1
+* PERC_POSSUI_LAB_CIENCIAS: 1
+* PERC_POSSUI_BIBLIOTECA: 1
+* PERC_POSSUI_QUADRA_ESPORTES: 0.5
+* PERC_POSSUI_REFEITORIO: 1
+
+CLASSIFICAÇÃO:
+
+* SCORE_INFRA >= 85 --> A
+* SCORE_INFRA >= 80 --> B
+* SCORE_INFRA >= 75 --> C
+* SCORE_INFRA >= 70 --> D
+* SCORE_INFRA >  70 --> E
 
 ---
 
@@ -101,7 +133,7 @@ Permite reprocessamento por ano.
 
 ## Execução
 
-1. Definir o ano:
+1. Definir o ano (Por padrão, é obtido o ano atual -1):
 
 ```python
 year_ref = 2026
